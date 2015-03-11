@@ -1,20 +1,25 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+#Importacion de la librerias
 from numpy import *
 from random import random
-#import numpy as np
 
+#Definicion de la clase
 class Matriz:
+    '''
+    Esta clase sirve como objeto para la manipulacion
+de las tablas de pesos y patrones de los enlaces de las capas
+    '''
+
+    #Se definen los tipos para validaciones
+    #Estos son los unicos tipos de datos que se aceptan
     types_integers=[int, int32]
     types_float=[double, float, float64]
     types_bool =[bool_, bool]
-    #Declaracion de atributos
-    #matriz=[] //Array
-
-    ''' No acepta multiples constructores ideas para mejorarlos '''
 
     #Constructor prueba global
+    #Acepta array[int,bool], (int, int)
     def __init__(self, *args, **keyargs):
         if(args):
             if(len(args) > 0):
