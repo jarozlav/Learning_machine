@@ -9,7 +9,7 @@ from random import random
 class Matriz:
     '''
     Esta clase sirve como objeto para la manipulacion
-de las tablas de pesos y patrones de los enlaces de las capas
+    de las tablas de pesos y patrones de los enlaces de las capas
     '''
 
     #Se definen los tipos para validaciones
@@ -18,8 +18,8 @@ de las tablas de pesos y patrones de los enlaces de las capas
     types_float=[double, float, float64]
     types_bool =[bool_, bool]
 
-    #Constructor prueba global
-    #Acepta array[int,bool], (int, int)
+    #Constructor global
+    #Acepta [int or bool or double], [[int or bool or double]], (int, int)
     def __init__(self, *args, **keyargs):
         if(args):
             if(len(args) > 0):
@@ -47,25 +47,25 @@ de las tablas de pesos y patrones de los enlaces de las capas
             else:
                 raise Exception("No se pasaron los parametros correctos")
 
-    #Constructor que recibe array
+    #Constructor que recibe [int or bool or double]
     def f_Array_Matriz(self, array):
         self.configure(len(array), 1)
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
                 self.set(r, c, array[r])
 
-    #Constructor que recibe filas y columnas
+    #Constructor que recibe (int, int)
     def f_Row_Column(self, row, column):
         self.configure(row, column)
         
-    #Constructor que recibe una matriz de tipo double
+    #Constructor que recibe una [[int or double]]
     def f_Matriz_D(self, sourceMatriz):
         self.configure(len(sourceMatriz), len(sourceMatriz[0]))
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
                 self.set(r, c, sourceMatriz[r][c])
 
-    #Constructor que recibe una matriz de booleanos
+    #Constructor que recibe una [[bool]]
     def f_Matriz(self, sourceMatriz):
         self.configure(len(sourceMatriz), len(sourceMatriz[0]))
         for r in range(self.getRows()):
@@ -74,6 +74,18 @@ de las tablas de pesos y patrones de los enlaces de las capas
                     self.set(r, c, 1)
                 else:
                     self.set(r, c, -1)
+    
+    #Inicializa la matriz
+    def configure(self, row, column):
+        self.matriz= zeros((row,column),dtype=double)
+        
+    #Asigna un valor en el elemento fila-columna
+    def set(self, row, column, value):
+        self.matriz[row][column]=value
+
+    #Obtiene el valor del elemento fila-columna
+    def get(self, row, column):
+        return self.matriz[row][column]
     
     #Suma un valor al elemento que esta en esa fila-columna
     def add(self, row, column, value):
@@ -91,10 +103,6 @@ de las tablas de pesos y patrones de los enlaces de las capas
             raise Exception ("Matriz -> F("+function+") La fila no esta dentro del rango permitido")
         if(column >= self.getColumns() or column <0):
             raise Exception("Matriz- > F("+function+") La columna no esta dentro del rango permitido")
-
-    #Asigna las filas y las columnas de la matriz
-    def configure(self, row, column):
-        self.matriz= zeros((row,column),dtype=double)
 
     #Crea una matriz de una sola columna
 ##     [[1],
@@ -144,21 +152,13 @@ de las tablas de pesos y patrones de los enlaces de las capas
                     return False
         return True
 
-    #Rellana la matriz con el array
+    #Rellena la matriz con el array
     def fromPackedArray(self, array, index):
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
                 self.matriz[r,c]=array[index]
                 index += 1
         return index;
-
-    #Asigna un valor en el elemento fila-columna
-    def set(self, row, column, value):
-        self.matriz[row][column]=value
-
-    #Obtiene el valor del elemento fila-columna
-    def get(self, row, column):
-        return self.matriz[row][column]
 
     #Nos dice si la matriz es un vector ya sea:
     #Una fila muchas columnas
@@ -212,7 +212,7 @@ de las tablas de pesos y patrones de los enlaces de las capas
             newMatriz[0,c]=self.matriz[row,c]
         return Matriz(newMatriz)
 
-    #Retorna las filas de la matriz
+    #Retorna la cantidad de filas que tiene la matriz
     def getRows(self):
         return len(self.matriz)
 
@@ -221,14 +221,12 @@ de las tablas de pesos y patrones de los enlaces de las capas
         from MatrizMath import MatrizMath
         if(column < 0 and column > self.getColumns()):
             raise Exception("No se puede obtener la columna #"+ column)
-        #newMatriz = zeros((self.getRows(),1), dtype=double)
         newMatriz = zeros((self.getRows(),1), dtype=double)
         for r in range(self.getRows()):
             newMatriz[r][0]=self.matriz[r][column]
-        #print newMatriz
         return Matriz(newMatriz)
 
-    #Retorna las columnas de la matriz
+    #Retorna la cantidad de columnas que tiene la matriz
     def getColumns(self):
         return len(self.matriz[0])
 
