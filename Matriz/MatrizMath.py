@@ -1,9 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
+#Importacion de las librerias 
 from Matriz import *
 
+#Definicion de la clase
 class MatrizMath:
 
+    #Suma 2 matrices
     @classmethod
     def add(self, matrizA, matrizB):
         if(matrizA.getRows() != matrizB.getRows()):
@@ -15,6 +19,7 @@ class MatrizMath:
         matrizC = matrizA.getMatriz() + matrizB.getMatriz()
         return Matriz(matrizC)
 
+    #Copia la matriz (source) a la matriz (target)
     @classmethod
     def copy(self, source, target):
         if(source.getRows() != target.getRows()):
@@ -25,6 +30,7 @@ class MatrizMath:
             for c in range(source.getColumns()):
                 target.set(r, c, source.get(r, c))
 
+    #Elimina la columna especificada (deleted)
     @classmethod
     def deleteCoumn(self, matriz, deleted):
         if (deleted >= matriz.getColumns()):
@@ -38,6 +44,7 @@ class MatrizMath:
                     targetColumn += 1
         return Matriz(newMatriz)
 
+    #Elimina la columna especificada (deleted)
     @classmethod
     def deleteRow(self, matriz, deleted):
         if (deleted >= matriz.getRows()):
@@ -51,6 +58,7 @@ class MatrizMath:
                 targetRow += 1
         return Matriz(newMatriz)
 
+    #Divide una matriz entre un divisor(int or double)
     @classmethod
     def divide(self, matriz, divisor):
         types=[int, double, float32, float64]
@@ -59,6 +67,7 @@ class MatrizMath:
         return 0.0
         
 
+    #Producto punto de 2 matrices
     @classmethod
     def dotProduct(self, matrizA, matrizB):
         if(not matrizA.isVector() or not matrizB.isVector()):
@@ -69,12 +78,14 @@ class MatrizMath:
             raise Exception("Para realizar el producto punto ambas matrices deben tener la misma longitud")
         return dot(a,b)
 
+    #Genera la matriz identidad de tamaño (size)
     @classmethod
     def identity(self, size):
         if(size < 1):
             raise Exception("La matriz identidad debe tener mas de 1 elemento")
         return Matriz(identity(size))
 
+    #Multiplica un matriz por un escalar
     @classmethod
     def scalar_multiply(self, matriz, escalar):
         types=[int, double, float, float64]
@@ -83,6 +94,7 @@ class MatrizMath:
             return Matriz(escalar * matriz.getMatriz())
         return 0.0
 
+    #Multiplicacion cruz de 2 matrices
     @classmethod
     def cross_multiply(self, matrizA, matrizB):
         if(matrizA.getColumns() != matrizB.getRows()):
@@ -90,6 +102,7 @@ class MatrizMath:
                             "las filas de la matriz B")
         return Matriz(dot(matrizA.getMatriz(), matrizB.getMatriz()))
 
+    #Resta la matrizB a la matrizA
     @classmethod
     def substract(self, matrizA, matrizB):
         if(matrizA.getRows() != matrizB.getRows()):
@@ -98,6 +111,7 @@ class MatrizMath:
             raise Exception("Las matrices deben tener la misma cantidad de columnas")
         return Matriz(matrizA.getMatriz() - matrizB.getMatriz())
 
+    #Multiplica elemento por elemento de las matrices
     @classmethod
     def multiply(self, matrizA, matrizB):
         result = Matriz(matrizA.getRows(), matrizB.getColumns())
@@ -107,10 +121,12 @@ class MatrizMath:
                 result.set(r, c, multiply)
         return result
 
+    #Traspone la matriz
     @classmethod
     def transpose(self, matriz):
         return Matriz(matriz.getMatriz().T)
 
+    #Determina la distancia vectorial del vector tipo matriz
     @classmethod
     def vectorLength(self, matriz):
         try:
@@ -125,6 +141,7 @@ class MatrizMath:
             sum_squart += math.pow(v[i], 2)
         return math.sqrt(sum_squart)
 
+    #Obtiene el error cuadratico
     @classmethod
     def squartError(self, errors):
         temp = 0
@@ -132,13 +149,14 @@ class MatrizMath:
             temp += math.pow(errors.get(r, 0), 2)
         return temp * 0.5
 
+    #Obtiene el sigmoidal de acuerdo a n
     @classmethod
     def sigmoidal(self, n):
         exp = (-1) * n
         densidad = (1 + math.pow(math.e, exp))
-        #print (1 / densidad)
         return (1 / densidad)
 
+    #Obtiene una matriz de sigmoidales de acuerdo a la matriz pasada
     @classmethod
     def matriz_sigmoidal(self, matriz):
         result = Matriz(matriz.getRows(), matriz.getColumns())
@@ -147,10 +165,12 @@ class MatrizMath:
                 result.set(r, c, MatrizMath.sigmoidal(matriz.get(r, c)))
         return matriz
 
+    #Sigmoidal prima
     @classmethod
     def delta_sigmoidal(self, n):
         return MatrizMath.sigmoidal(n) * (1 - MatrizMath.sigmoidal(n))
 
+    #Matriz de sigmoidales primas
     @classmethod
     def matriz_delta(self, matriz):
         result = Matriz(matriz.getRows(), matriz.getColumns())
