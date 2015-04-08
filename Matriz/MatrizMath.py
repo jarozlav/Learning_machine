@@ -1,8 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-#Importacion de las librerias 
-from Matriz import *
+
+#from Matriz.Matriz import Matriz
+#import Matriz
+from Matriz import Matriz
+from numpy import *
+import math
 
 #Definicion de la clase
 class MatrizMath:
@@ -70,6 +74,7 @@ class MatrizMath:
     #Producto punto de 2 matrices
     @classmethod
     def dotProduct(self, matrizA, matrizB):
+        from numpy import *
         if(not matrizA.isVector() or not matrizB.isVector()):
             raise Exception("Para realizar el producto punto ambas matrices deben ser vectores")
         a = matrizA.toPackedArray()
@@ -163,7 +168,7 @@ class MatrizMath:
         for r in range(matriz.getRows()):
             for c in range(matriz.getColumns()):
                 result.set(r, c, MatrizMath.sigmoidal(matriz.get(r, c)))
-        return matriz
+        return result
 
     #Sigmoidal prima
     @classmethod
@@ -178,3 +183,13 @@ class MatrizMath:
             for c in range(matriz.getColumns()):
                 result.set(r, c, MatrizMath.delta_sigmoidal(matriz.get(r, c)))
         return result
+    
+    @classmethod
+    def moreProbable(self, resp, names):
+        index = 0
+        tmp = resp.get(0, 0)
+        for c in range(resp.getColumns()):
+            if(resp.get(0, c) > tmp):
+                tmp = resp.get(0, c)
+                index = c
+        return names[index]

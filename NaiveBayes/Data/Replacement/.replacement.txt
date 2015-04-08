@@ -1,0 +1,10 @@
+(w|W)on\'t: will not
+(c|C)an\'t: cannot
+(i|I)\'m: I am
+ain\'t: is not
+(\w+)\'ll: \g<1> will
+(\w+)n\'t: \g<1> not
+(\w+)\'ve: \g<1> have
+(\w+)\'s: \g<1> is
+(\w+)\'re: \g<1> are
+(\w+)\'d: \g<1> would

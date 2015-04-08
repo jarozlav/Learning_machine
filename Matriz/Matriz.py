@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #Importacion de la librerias
+from Tools.Tools import Tools
 from numpy import *
 from random import random
 
@@ -14,38 +15,40 @@ class Matriz:
 
     #Se definen los tipos para validaciones
     #Estos son los unicos tipos de datos que se aceptan
-    types_integers=[int, int32]
-    types_float=[double, float, float64]
-    types_bool =[bool_, bool]
-
+    
+    __TOOLS = None
+    __MATRIZ = None
+    
     #Constructor global
     #Acepta [int or bool or double], [[int or bool or double]], (int, int)
     def __init__(self, *args, **keyargs):
+        self.__TOOLS = Tools()
         if(args):
             if(len(args) > 0):
-                if(type(args[0]) == ndarray or type(args[0]) == list):
-                    if(type(args[0][0]) in self.types_integers or type(args[0][0]) in self.types_float):
+                if(type(args[0]) in self.__TOOLS.getArrays()):
+                    if(type(args[0][0]) in self.__TOOLS.getNumbers()):
                         self.f_Array_Matriz(args[0])
-                    elif(type(args[0][0][0]) in self.types_bool):
+                    elif(type(args[0][0][0]) in self.__TOOLS.getBools()):
                         self.f_Matriz(args[0])
                     else:
                         self.f_Matriz_D(args[0])
-                elif(type(args[0]) in self.types_integers and type(args[1]) in self.types_integers):
+                elif(type(args[0]) in self.__TOOLS.getIntegers() and type(args[1]) in self.__TOOLS.getIntegers()):
                     self.f_Row_Column(args[0],args[1])
                 else:
                     raise Exception("No se pasaron los parametros correctos")
         elif(keyargs):
-            if(type(keyargs.get('sourceMatriz')) == ndarray):
-                if(type(keyargs.get('sourceMatriz')[0]) in self.types_integers):
+            if(type(keyargs.get('sourceMatriz')) in self.__TOOLS.getArrays()):
+                if(type(keyargs.get('sourceMatriz')[0]) in self.__TOOLS.getNumbers()):
                     self.f_Array_Matriz(keyargs.get('sourceMatriz'))
-                elif(type(keyargs.get('sourceMatriz')[0,0]) in self.types_bool):
+                elif(type(keyargs.get('sourceMatriz')[0,0]) in self.__TOOLS.getBools()):
                     self.f_Matriz(keyargs.get('sourceMatriz'))
                 else:
                     self.f_Matriz_D(keyargs.get('sourceMatriz'))
-            elif (keyargs.get('row') in self.ypes_integers and keyargs.get('column') in self.types_integers):
+            elif (keyargs.get('row') in self.__TOOLS.getIntegers() and keyargs.get('column') in self.__TOOLS.getIntegers()):
                 self.f_Row_Column(keyargs.get('row'),keyargs.get('column'))
             else:
                 raise Exception("No se pasaron los parametros correctos")
+        
 
     #Constructor que recibe [int or bool or double]
     def f_Array_Matriz(self, array):
@@ -77,15 +80,15 @@ class Matriz:
     
     #Inicializa la matriz
     def configure(self, row, column):
-        self.matriz= zeros((row,column),dtype=double)
+        self.__MATRIZ= zeros((row,column),dtype=double)
         
     #Asigna un valor en el elemento fila-columna
     def set(self, row, column, value):
-        self.matriz[row][column]=value
+        self.__MATRIZ[row][column]=value
 
     #Obtiene el valor del elemento fila-columna
     def get(self, row, column):
-        return self.matriz[row][column]
+        return self.__MATRIZ[row][column]
     
     #Suma un valor al elemento que esta en esa fila-columna
     def add(self, row, column, value):
@@ -112,7 +115,7 @@ class Matriz:
     def createColumnMatriz(self, input):
         d= zeros((len(input),1),dtype=double)
         for i in range(len(d)):
-            d[i,0]=input[i]
+            d[i][0]=input[i]
         return Matriz(d)
 
     #Crea una matriz de una sola fila
@@ -122,7 +125,7 @@ class Matriz:
         d= zeros((1,len(input[0])),dtype=double)
         for i in range(len(d[0])):
             d[0,i] = input[0,i]
-        return d
+        return Matriz(d)
 
     #Pone a la matriz en ceros
     def clear(self):
@@ -132,14 +135,14 @@ class Matriz:
 
     #Clona la matriz generando una nueva
     def clone(self):
-        return Matriz(self.matriz)
+        return Matriz(self.__MATRIZ)
 
     #Verifica que 2 matrices sean iguales
     def equals(self, matriz):
-        return self.equals1(matriz, 10)
+        return self.__equals1(matriz, 10)
 
     #Verifica que 2 matrices sean iguales con precision
-    def equals1(self, matriz, precision):
+    def __equals1(self, matriz, precision):
         if(precision < 0):
             raise Exception("La presicion debe ser mayor a cero")
         test = math.pow(10.0,precision)
@@ -156,7 +159,7 @@ class Matriz:
     def fromPackedArray(self, array, index):
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
-                self.matriz[r,c]=array[index]
+                self.__MATRIZ[r,c]=array[index]
                 index += 1
         return index;
 
@@ -164,14 +167,13 @@ class Matriz:
     #Una fila muchas columnas
     #Muchas filas una columna
     def isVector(self):
-        #return self.getRows() == 1 ? True : self.getColumns() == 1 ? True : False
         return (False, True)[int((self.getRows() == 1 or self.getColumns() == 1))]
 
     #Indica si la matriz esta en ceros
     def isZero(self):
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
-                if(self.matriz[r,c] != 0):
+                if(self.__MATRIZ[r,c] != 0):
                     return False;
         return True
 
@@ -179,14 +181,14 @@ class Matriz:
     def randomize(self, minimo, maximo):
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
-                self.matriz[r,c]=random()*(maximo - minimo) + minimo
+                self.__MATRIZ[r,c]=random()*(maximo - minimo) + minimo
 
     #Suma todos los elementos de la matriz
     def sum(self):
         result =0
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
-                result += self.matriz[r,c]
+                result += self.__MATRIZ[r,c]
         return result
 
     #Devuelve un vector con los elementos de la matriz
@@ -195,41 +197,47 @@ class Matriz:
         index = 0
         for r in range(self.getRows()):
             for c in range(self.getColumns()):
-                result.append(self.matriz[r,c])
+                result.append(self.__MATRIZ[r,c])
         return result
 
     #Retorna la matriz
     def getMatriz(self):
-        return self.matriz
+        return self.__MATRIZ
 
     #Retorna la fila especificada de la matriz
     def getRow(self, row):
-        from MatrizMath import MatrizMath
+        from numpy import *
         if(row < 0 and row > self.getRows()):
             raise Exception("No se puede obtener la fila #"+ row)
         newMatriz = zeros((1,self.getColumns()), dtype=double)
         for c in range(self.getColumns()):
-            newMatriz[0,c]=self.matriz[row,c]
+            newMatriz[0,c]=self.__MATRIZ[row,c]
         return Matriz(newMatriz)
 
     #Retorna la cantidad de filas que tiene la matriz
     def getRows(self):
-        return len(self.matriz)
+        return len(self.__MATRIZ)
 
     #Retorna la columna especificada de la matriz
     def getColumn(self, column):
-        from MatrizMath import MatrizMath
+        from numpy import *
         if(column < 0 and column > self.getColumns()):
             raise Exception("No se puede obtener la columna #"+ column)
         newMatriz = zeros((self.getRows(),1), dtype=double)
         for r in range(self.getRows()):
-            newMatriz[r][0]=self.matriz[r][column]
+            newMatriz[r][0]=self.__MATRIZ[r][column]
         return Matriz(newMatriz)
 
     #Retorna la cantidad de columnas que tiene la matriz
     def getColumns(self):
-        return len(self.matriz[0])
+        return len(self.__MATRIZ[0])
 
     #Devuelve el tamaño de la matriz (filas * columnas)
     def size(self):
-        return size(self.matriz)
+        return size(self.__MATRIZ)
+    
+    def setAttribute(self, item, data):
+        globals()["__"+item.upercase()] = data
+        
+    def getAttribute(self, item, data):
+        return globals()["__"+item.upercase()];
